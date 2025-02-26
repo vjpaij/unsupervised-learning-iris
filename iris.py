@@ -8,12 +8,13 @@ import datetime
 iris_df = sns.load_dataset('iris')
 
 sns.set_style = 'darkgrid'
-#sns.scatterplot(data=iris_df, x='sepal_length', y='petal_length', hue='species')
-# plt.show()
+sns.scatterplot(data=iris_df, x='sepal_length', y='petal_length', hue='species')
+plt.show()
 
 numeric_cols = iris_df.select_dtypes(include=[np.number]).columns
 X = iris_df[numeric_cols]
 
+#Using K-Means method
 from sklearn.cluster import KMeans
 model = KMeans(n_clusters=3, random_state=42)
 model.fit(X)
@@ -21,10 +22,10 @@ print(model.cluster_centers_)
 preds = model.predict(X)
 print(preds)
 
-# sns.scatterplot(data=X, x='sepal_length', y='petal_length', hue=preds)
-# centers_x, centers_y = model.cluster_centers_[:, 0], model.cluster_centers_[:, 2]
-# plt.plot(centers_x, centers_y, 'xb')
-# #plt.show()
+sns.scatterplot(data=X, x='sepal_length', y='petal_length', hue=preds)
+centers_x, centers_y = model.cluster_centers_[:, 0], model.cluster_centers_[:, 2]
+plt.plot(centers_x, centers_y, 'xb')
+plt.show()
 
 #variance is obtained by inertia. Lesser the variance, lesser is the spread.
 print(model.inertia_)
@@ -45,5 +46,15 @@ plt.xlabel('Clusters (K)')
 plt.ylabel('Inertia')
 plt.show()
 
+#Using DBSCAN method
+from sklearn.cluster import DBSCAN
 
+model_db = DBSCAN(eps=1.1, min_samples=4)
+model_db.fit(X)
+
+#DBSCAN doesn't have prediction steps. It directly assigns labels to all inputs
+print(model_db.labels_)
+
+sns.scatterplot(data=X, x='sepal_length', y='petal_length', hue=model_db.labels_)
+plt.show()
 
