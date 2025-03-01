@@ -8,8 +8,8 @@ import datetime
 iris_df = sns.load_dataset('iris')
 
 sns.set_style = 'darkgrid'
-# sns.scatterplot(data=iris_df, x='sepal_length', y='petal_length', hue='species')
-# plt.show()
+sns.scatterplot(data=iris_df, x='sepal_length', y='petal_length', hue='species')
+plt.show()
 
 numeric_cols = iris_df.select_dtypes(include=[np.number]).columns
 X = iris_df[numeric_cols]
@@ -22,10 +22,10 @@ print(model.cluster_centers_)
 preds = model.predict(X)
 print(preds)
 
-# sns.scatterplot(data=X, x='sepal_length', y='petal_length', hue=preds)
-# centers_x, centers_y = model.cluster_centers_[:, 0], model.cluster_centers_[:, 2]
-# plt.plot(centers_x, centers_y, 'xb')
-# plt.show()
+sns.scatterplot(data=X, x='sepal_length', y='petal_length', hue=preds)
+centers_x, centers_y = model.cluster_centers_[:, 0], model.cluster_centers_[:, 2]
+plt.plot(centers_x, centers_y, 'xb')
+plt.show()
 
 #variance is obtained by inertia. Lesser the variance, lesser is the spread.
 print(model.inertia_)
@@ -40,11 +40,11 @@ for n_cluster in options:
     model = KMeans(n_clusters=n_cluster, random_state=42).fit(X)
     inertias.append(model.inertia_)
 
-# plt.title("Clusters vs Inertia")
-# plt.plot(options, inertias, '-o')
-# plt.xlabel('Clusters (K)')
-# plt.ylabel('Inertia')
-# plt.show()
+plt.title("Clusters vs Inertia")
+plt.plot(options, inertias, '-o')
+plt.xlabel('Clusters (K)')
+plt.ylabel('Inertia')
+plt.show()
 
 #Using DBSCAN method
 from sklearn.cluster import DBSCAN
@@ -55,18 +55,29 @@ model_db.fit(X)
 #DBSCAN doesn't have prediction steps. It directly assigns labels to all inputs
 print(model_db.labels_)
 
-# sns.scatterplot(data=X, x='sepal_length', y='petal_length', hue=model_db.labels_)
-# plt.show()
+sns.scatterplot(data=X, x='sepal_length', y='petal_length', hue=model_db.labels_)
+plt.show()
 
-# Principal Component Analysis - Dimension Reductionality. 
 # If we have 100 columns, it is difficult to build a model and takes more resources and time. Reducing the columns to say 5 columns
 # and try to retain as much information as possible.
+# 1. Principal Component Analysis -> for linear Dimension Reductionality
 
 from sklearn.decomposition import PCA
 
 pca = PCA(n_components=2)
 pca.fit(iris_df[numeric_cols])
 transformed = pca.transform(iris_df[numeric_cols])
+
+sns.scatterplot(x=transformed[:,0], y=transformed[:,1], hue=iris_df['species'])
+plt.show()
+
+# 2. t-Distributed Stochastic Neighbor Embedding (t-SNE) -> for non-linear Dimension Reductionality. 
+# t-SNE helps only in visualization of data
+
+from sklearn.manifold import TSNE
+
+tsne = TSNE(n_components=2)
+transformed = tsne.fit_transform(iris_df[numeric_cols])
 
 sns.scatterplot(x=transformed[:,0], y=transformed[:,1], hue=iris_df['species'])
 plt.show()
